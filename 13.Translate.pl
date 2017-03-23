@@ -4,95 +4,29 @@
 #Translate DNA into protein
 
 use strict;
-use BeginPerlBioinfo;
+use warnings;
 
-print "Print your DNA sequences: \n"
-my $dna =<>;
-my $protein;
-my $codon;
-
-for (my $i =0,$i <(length($dna)-2);$i +=3){
-    $codon=substr($dna,$i,3);
-    $protein .= codon2aa($codon);
-}
-
-print "The protein sequence is\n\n$protein\n\n";
-
-sub codon2aa {
-    my($codon) = @_;
-
-    $codon = uc $codon;
- 
-    my(%genetic_code) = (
+my %proteins = qw/
+    UUU F UUC F UUA L UUG L UCU S UCC S UCA S UCG S UAU Y UAC Y UGU C UGC C UGG W
+    CUU L CUC L CUA L CUG L CCU P CCC P CCA P CCG P CAU H CAC H CAA Q CAG Q CGU R CGC R CGA R CGG R
+    AUU I AUC I AUA I AUG M ACU T ACC T ACA T ACG T AAU N AAC N AAA K AAG K AGU S AGC S AGA R AGG R
+    GUU V GUC V GUA V GUG V GCU A GCC A GCA A GCG A GAU D GAC D GAA E GAG E GGU G GGC G GGA G GGG G
+    /;
     
-    'TCA' => 'S',    
-    'TCC' => 'S',    
-    'TCG' => 'S',    
-    'TCT' => 'S',    
-    'TTC' => 'F',    
-    'TTT' => 'F',   
-    'TTA' => 'L',   
-    'TTG' => 'L',    
-    'TAC' => 'Y',   
-    'TAT' => 'Y',
-    'TAA' => '_',
-    'TAG' => '_',
-    'TGC' => 'C',
-    'TGT' => 'C',
-    'TGA' => '_',
-    'TGG' => 'W',
-    'CTA' => 'L',
-    'CTC' => 'L',
-    'CTG' => 'L',
-    'CTT' => 'L',
-    'CCA' => 'P',
-    'CCC' => 'P',
-    'CCG' => 'P',
-    'CCT' => 'P',
-    'CAC' => 'H',
-    'CAT' => 'H',
-    'CAA' => 'Q',
-    'CAG' => 'Q',
-    'CGA' => 'R',
-    'CGC' => 'R',
-    'CGG' => 'R',
-    'CGT' => 'R',
-    'ATA' => 'I',
-    'ATC' => 'I',
-    'ATT' => 'I',
-    'ATG' => 'M',
-    'ACA' => 'T',
-    'ACC' => 'T',
-    'ACT' => 'T',
-    'ACG' => 'T',
-    'AGC' => 'S',
-    'AGT' => 'S',
-    'AGA' => 'R',
-    'AGG' => 'R',
-    'GTA' => 'T',
-    'GTC' => 'T',
-    'GTG' => 'T',
-    'GTT' => 'T',
-    'GCA' => 'A',
-    'GCC' => 'A',
-    'GCG' => 'A',
-    'GCT' => 'A',
-    'GAC' => 'D',
-    'GAT' => 'D',
-    'GAA' => 'E',
-    'GAG' => 'E',
-    'GGA' => 'G',
-    'GGC' => 'G',
-    'GGG' => 'G',
-    'GGT' => 'G',
-    );
+print "Import your DNA sequence(end with Enter):\n";
+LINE: while (<>) {
+    chomp;
     
-    if (exists $genetic_code{$codon}){
-        return $genetic_code{codon};
-    }else{
-        print STDEER "Bad codon \"$codon\"!!\n";
-        exit;
+    y/GCTA/CGAU/; # translate (point 1&2 mixed)
+    
+    foreach my $protein (/(...)/g) {
+        if (defined $proteins{$protein}) {
+            print $proteins{$protein};
+        }
+        else {
+            print "Whoops, stop state?\n";
+            next LINE;
+        }
     }
+    print "\n"
 }
-
-exit;
