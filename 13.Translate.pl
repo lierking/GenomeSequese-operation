@@ -14,19 +14,38 @@ my %proteins = qw/
     /;
     
 print "Import your DNA sequence(end with Enter):\n";
+
+
 LINE: while (<>) {
     chomp;
     
+    if (/^(>.*)/){
+    	  print "\n$1\n";
+    	  next LINE;
+    }
+    
+    my %nc = qw/A 1 T 2 G 3 C 4/;
+    foreach (/(.)/g){ 	
+    	  unless (exists $nc{$_}){
+    	  	  print "This is NOT DNA sequence!\n";
+    	  	  next LINE;
+    	  }
+    }
+    
+    my $string_len =  length();
+    if ($string_len%3!=0){
+    	  print "This sequence is not complete!\n"
+    }
+    
     y/GCTA/CGAU/; # translate (point 1&2 mixed)
     
-    foreach my $protein (/(...)/g) {
-        if (defined $proteins{$protein}) {
-            print $proteins{$protein};
+    foreach my $codon (/(...)/g) {
+        if (defined $proteins{$codon}) {
+            print "$proteins{$codon}";
         }
         else {
-            print "Whoops, stop state?\n";
             next LINE;
         }
     }
-    print "\n"
+    print "\n";
 }
