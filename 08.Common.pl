@@ -7,25 +7,29 @@ use strict;
 my($s1,$s2,$max,$length,$star,$common,$compare,@compare,$common,@common,$maxcom,%len,$len);
 $s1="AACTGCACGTGCATCGGATGCATCGATCGTGCGAGTAGTCGATCGATCGTAGCTAGCTCAGTCGATCAGCTACCTCGC";
 $s2="CGTAGCTACGATCGCATCAGCTACCTCCGTTCGAGTCTGCGCAACGCTACGACTATCGACGTCA";
-$max=length($s2);
-for($star=0;$star<=$max;$star++)
-{
-   for($length=2;$length<=$max-$star;$length++)
-   {
-     push @compare,substr($s2,$star,$length);
-        
-    }
-}
-sort @compare;
-foreach $compare(@compare){
-     chomp $compare;
-     if($s1=~/$compare/){
-     push @common,$compare;
-}
-}
-foreach $common(@common){
-$len{$common}=length($common);
-}
-@common=sort {$len{$b} <=>$len{$a}} keys %len;
-$maxcom=shift@common;
-print "$maxcom\t$len{$maxcom}\n";
+my $size2=length($s2);
+my $len=$size2;
+my $getmatch=0;
+my $offset=0;
+ 
+LABEL:for ($len=$size2; $len>0; $len--){
+              for($offset=0; $offset<=$size2-$len; $offset++){
+                   if($s1 =~ substr($s2,$offset,$len)){last LABEL;}
+             }
+          }
+ 
+print "the length of longest common substring is $len\n";
+print "one of the longest common subsring is: ".substr($s2,$offset,$len)."\n";
+ 
+ 
+my %common=();
+$common{substr($s2,$offset,$len)}=1; #all=1
+ 
+for(my $newoffset=$offset+$len; $newoffset<=$size2-$len; $newoffset++){
+         if($s1 =~ substr($s2,$newoffset,$len)){
+             if (!exists $common{substr($s2,$newoffset,$len)} ){                  
+                 print substr($s2,$newoffset,$len)."\n";
+                 $common{substr($s2,$newoffset,$len)}=1;
+             }
+         }
+     }
